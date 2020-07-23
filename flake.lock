@@ -1,0 +1,73 @@
+{
+  "nodes": {
+    "azure": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1595662642,
+        "narHash": "sha256-KmYW1rZk6zYEgv7jeQsYtERCHSuIjMfZUVxJmRj7dMY=",
+        "ref": "dev",
+        "rev": "bd74a57bc7fcdb72553d897ddd2566991b6881b8",
+        "revCount": 3,
+        "type": "git",
+        "url": "file:///home/cole/code/flake-azure"
+      },
+      "original": {
+        "owner": "colemickens",
+        "repo": "flake-azure",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1595665824,
+        "narHash": "sha256-yDgB9yx1COUkWGq1bhIAe3yqfP1i6TOIgkqFKsDul20=",
+        "ref": "cmpkgs",
+        "rev": "fd4f58423f73500f61e747ae17e11e7bf2919ccb",
+        "revCount": 235780,
+        "type": "git",
+        "url": "file:///home/cole/code/nixpkgs/cmpkgs"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "azure": "azure",
+        "nixpkgs": "nixpkgs",
+        "sops-nix": "sops-nix"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1595664747,
+        "narHash": "sha256-SC54aRFXG8ueWGS0THxRsDAUO7CBZJKSVjIren0TGys=",
+        "ref": "azure",
+        "rev": "310745e096b9be2c6f0bcfffd45af0e904f3c014",
+        "revCount": 94,
+        "type": "git",
+        "url": "file:///home/cole/code/sops-nix"
+      },
+      "original": {
+        "owner": "Mic92",
+        "ref": "master",
+        "repo": "sops-nix",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
