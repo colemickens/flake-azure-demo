@@ -4,9 +4,8 @@
   inputs = {
     nixpkgs = { url = "github:nixos/nixpkgs/nixos-unstable"; };
     #azure = { url = "github:colemickens/nixos-azure"; };
-    azure = { url = "github:colemickens/flake-azure"; };
+    azure = { url = "github:colemickens/flake-azure/dev"; };
     sops-nix = { url = "github:Mic92/sops-nix/master"; };
-    
     azure.inputs.nixpkgs.follows = "nixpkgs";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };

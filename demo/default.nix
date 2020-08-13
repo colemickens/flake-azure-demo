@@ -1,5 +1,14 @@
-{ config, pkgs, modulesPath, inputs, ... }:
+{ config, pkgs, lib, modulesPath, inputs, ... }:
 
+let
+  hs = lib.fileContents ./hostname;
+  payload = pkgs.substituteAll {
+    name = "index.html";
+    src = ./site/index.html;
+    dir = "/";
+    systemLabel = config.system.nixos.label;
+  };
+in
 {
   imports = [
     "${modulesPath}/profiles/headless.nix"
@@ -32,23 +41,24 @@
     };
 
 
-    # services.tor.enable = true;
-    # services.tor.hiddenServices = {
-    #   "demo" = {
-    #     keyPath = config.sops.secrets.nghs-key.path;
-    #     map = [{ port = "80"; toPort = "80"; }];
-    #   };
-    # };
-    # systemd.services.tor = {
-    #   serviceConfig.SupplementaryGroups = [ config.users.groups.keys.name ]; # we shouldn't need this AND owner/mode below tho?
-    # };
-    
+    services.tor.enable = true;
+    services.tor.hiddenServices = {
+      "${hs}" = {
+        keyPath = config.sops.secrets."${hs}-key".path;
+        map = [{ port = "80"; toPort = "80"; }];
+      };
+    };
+    systemd.services.tor = {
+      serviceConfig.SupplementaryGroups = [ config.users.groups.keys.name ]; # we shouldn't need this AND owner/mode below tho?
+    };
+
+
     sops = {
       externalAuthEnvVars = {
         AZURE_AUTH_MODE
       };
       secrets = {
-        nghs-key = {
+        "${hs}-key" = {
           format = "binary";
           sopsFile = ./hs_ed25519_secret_key.sops;
           #owner = config.users.users.tor.name;

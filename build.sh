@@ -31,6 +31,7 @@ if [[ "${1}" == "update" ]]; then
 else
   nix --experimental-features 'nix-command flakes' \
     build \
+    --option 'substituters' 'https://cache.nixos.org' \
     --override-input nixpkgs /home/cole/code/nixpkgs/cmpkgs \
     --override-input azure /home/cole/code/nixos-azure \
     --override-input sops-nix /home/cole/code/sops-nix \
