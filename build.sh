@@ -2,7 +2,7 @@
 set -x
 set -e
 
-remote="azureuser@13.66.169.164"
+remote="azureuser@13.66.201.252"
 
 git add -A .
 
@@ -10,7 +10,7 @@ if [[ "${1}" == "update" ]]; then
   nix --experimental-features 'nix-command flakes' \
     build \
     --override-input nixpkgs /home/cole/code/nixpkgs/cmpkgs \
-    --override-input azure /home/cole/code/flake-azure \
+    --override-input azure /home/cole/code/nixos-azure \
     --override-input sops-nix /home/cole/code/sops-nix \
     ".#demo.toplevel"
 
@@ -32,7 +32,7 @@ else
   nix --experimental-features 'nix-command flakes' \
     build \
     --override-input nixpkgs /home/cole/code/nixpkgs/cmpkgs \
-    --override-input azure /home/cole/code/flake-azure \
+    --override-input azure /home/cole/code/nixos-azure \
     --override-input sops-nix /home/cole/code/sops-nix \
     ".#demo.azureScripts"
 fi

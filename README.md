@@ -1,12 +1,12 @@
-# flake-azure-demo
+# nixos-azure-demo
 *a declarative NixOS-based Azure VM to securely and automatically boot a Tor hidden service*
 
-- [flake-azure-demo](#flake-azure-demo)
+- [nixos-azure-demo](#nixos-azure-demo)
   - [Temporary Important WIP Info](#temporary-important-wip-info)
   - [Overview](#overview)
   - [Why this is cool!](#why-this-is-cool)
   - [Walkthrough](#walkthrough)
-    - [1. Azure Identity + KeyVault Preparation](#1-azure-identity--keyvault-preparation)
+    - [1. Create Azure Identity + KeyVault Resources](#1-create-azure-identity--keyvault-resources)
     - [2. Generate our secret key](#2-generate-our-secret-key)
     - [3. Configure Sops & Encrypt our Secret](#3-configure-sops--encrypt-our-secret)
     - [4. Build the Image](#4-build-the-image)
@@ -16,7 +16,7 @@
 ## Temporary Important WIP Info
 
 See `./build.sh`. I'm overriding:
-* `flake-azure` (my fork, `dev` branch) (to hide it for now)
+* `nixos-azure` (my fork, `dev` branch) (to hide it for now)
 * `sops-nix` (my fork, `azure` branch) (to use my fork of `sops` and relax nix constraints)
 * `sops` (inside `sops-nix`) (to get Azure MSI convenience fix)
 * `nixpkgs` (my fork, `cmpkgs` branch) (to get my Tor module bring-your-own-key improvement)
@@ -31,7 +31,7 @@ The `./demo/default.nix` includes some hacks that shouldn't be necessary.
 
 This repo seeks to demonstrate a few things:
 * how to use an experimental new Nix feature, [flakes](#TODO), to compose Nix projects
-* a standalone repository building Azure VM images with the Nix modules from  [flake-azure](https://github.com/colemickens/flake-azure)
+* a standalone repository building Azure VM images with the Nix modules from  [nixos-azure](https://github.com/colemickens/nixos-azure)
 * Linux booting in Azure using [azure-linux-boot-agent](https://github.com/colemickens/azure-linux-boot-agent) (*a simpler, safer way to boot Linux in Azure*)
 * securely shipping encrypted secrets that are transparently decrypted at boot-time thanks to [NixOS](https://nixos.org) + [`sops-nix`](https://github.com/Mic92/sops-nix) (see below, section [awesomeness](#awesomeness))
 
@@ -49,7 +49,7 @@ This demo will walk us through:
 * Our secrets can be encrypted and  checked in, and yet still seamlessly accessed by applications!
 * Owing to `sops` we can have secrets that are easily consumed in integration pipelines (via an ssh keypair), in production systems (via Azure KeyVault+MSI), and developer workstations (via GPG, or Azure KeyVault+CLI)!
 * You get to write very small amounts of declarative Nix to produce images that can automatically start any service, with any secret, securely, using the best encryption actor for all of your environments.
-* If you don't know, Nix (and flakes) is very cool. If you have Nix and KVM (well, and technically my HS key), you can reproduce this exact demo image. Every single application, compiler flag, file, every single last dependency is hashed. Imagine if Ansible were perfect and actually reliable, or if Dockerfiles were *actually* reproducible and minimized *by default*. (see the `docker` dir in [`flake-azure`](https://github.com/colemickens/flake-azure/tree/main/docker) for an example)
+* If you don't know, Nix (and flakes) is very cool. If you have Nix and KVM (well, and technically my HS key), you can reproduce this exact demo image. Every single application, compiler flag, file, every single last dependency is hashed. Imagine if Ansible were perfect and actually reliable, or if Dockerfiles were *actually* reproducible and minimized *by default*. (see the `docker` dir in [`nixos-azure`](https://github.com/colemickens/nixos-azure/tree/main/docker) for an example)
 
 
 ## Walkthrough
@@ -60,7 +60,10 @@ There is a video walkthrough of this demo. It largely covers the same informatio
 
 We're using Nix, so you don't need anything else installed!
 
-### 1. Azure Identity + KeyVault Preparation
+### 1. Create Azure Identity + KeyVault Resources
+
+This setup step only needs to be run once, though you may wish to run it more
+often to create separate KeyVaults for different teams, etc.
 
 ```bash
 $ nix-shell -p azure-cli
@@ -84,6 +87,13 @@ az keyvault create \
   --name "${kvname}" \
   --resource-group "${kvrg}" \
   --location "${kvloc}"
+kvid="$(az keyvault show --name "${name}" -o tsv --query '[id]')"
+
+# Protect the KeyVault from deletion
+az lock create \
+  --name "${kvname}-lock-cannotdelete" \
+  --lock-type CanNotDelete \
+  --resource "${kvid}"
 
 # Create the Key in our KeyVault (encrypt/decrypt actions allowed)
 az keyvault key create \
@@ -124,11 +134,11 @@ Again, all you need is `nix` installed.
 
 
 
-```
+```shell
 $ nix-shell -p mkp224o
 
 prefix="nixos" # you must make this short or you will get no matches!
-mkp224o-<tab> # literally hit the tab button so you can see what your choices are
+mkp224o-<tab> "${prefix}" # literally hit the tab button so you can see what your choices are
 ```
 
 You'll want to guess and pick the best `mkp224o-[variant]` and a short `prefix`, otherwise you
@@ -140,16 +150,20 @@ Copy the files from the resulting directory into `./demo` (replace the existing 
 
 First create `.sops.yaml` to direct `sops` on how to encrypt new secrets.
 
-*Be sure to update this with your AKV Key URL from above!*
 
 ```yaml
 # to encrypt new secrets with Azure KeyVault
 creation_rules:
   - path_regex: .*$
+    
+    # be sure to update this with your AKV Key URL from above!
     azure_keyvault: https://use-your-key-url-here.vault.azure.net/keys/key-name/6e538f7c6d714d138226082070d1fe99
-# to *also* encrypt new secrets with your GPG backup/offline key
-... TODO
+    
+    # to *also* encrypt new secrets with your GPG backup/offline key
+... pgp: 'FBC7B9E2A4F9289AC0C1D4843D16CEE4A27381B4'
 ```
+
+(`gpg --list-keys --with-fingerprint` might be helpful.)
 
 Then, simply invoke `sops` to encrypt the Hidden Service key.
 
@@ -170,7 +184,7 @@ nix --experimental-features 'nix-command flakes' \
   build ".#image.azureImage"
 ```
 
-Next, using another new flake-azure module, we can build a set of scripts to easily upload
+Next, using another new nixos-azure module, we can build a set of scripts to easily upload
 the resulting image.
 
 ```shell
@@ -196,8 +210,8 @@ identity_id="azure identity resouce ID from above"
 sshpubkey="your own ssh key"
 
 # for example, mine looked like this:
-image_id="/subscriptions/.../resourceGroups/images/providers/Microsoft.Compute/images/nixos"
-identity_id="/subscriptions/.../resourceGroups/deploy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/tor-vm-ident"
+image_id="/subscriptions/aff271ee-e9be-4441-b9bb-42f5af4cbaeb/resourceGroups/20814-20.09.20200725.fd4f584/providers/Microsoft.Compute/images/nixos"
+identity_id="/subscriptions/aff271ee-e9be-4441-b9bb-42f5af4cbaeb/resourceGroups/tor-deployment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/tor-vm-ident"
 sshpubkey="$(ssh-add -L)"
 
 # you can now copy-n-paste the rest to create a 

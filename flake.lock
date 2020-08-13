@@ -8,12 +8,9 @@
       },
       "locked": {
         "lastModified": 1595662642,
-        "narHash": "sha256-KmYW1rZk6zYEgv7jeQsYtERCHSuIjMfZUVxJmRj7dMY=",
-        "ref": "dev",
-        "rev": "bd74a57bc7fcdb72553d897ddd2566991b6881b8",
-        "revCount": 3,
+        "narHash": "sha256-cKmqIJ9up1ZS3pLHsPtfXWFYfd26HPq6IHpf7t9VQ98=",
         "type": "git",
-        "url": "file:///home/cole/code/flake-azure"
+        "url": "file:///home/cole/code/nixos-azure"
       },
       "original": {
         "owner": "colemickens",
@@ -23,11 +20,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1595665824,
-        "narHash": "sha256-yDgB9yx1COUkWGq1bhIAe3yqfP1i6TOIgkqFKsDul20=",
+        "lastModified": 1595996365,
+        "narHash": "sha256-sV8N2dttoQRtEyUfjDD1+9w3Jv+Dc3CQ2Twps71EElE=",
         "ref": "cmpkgs",
-        "rev": "fd4f58423f73500f61e747ae17e11e7bf2919ccb",
-        "revCount": 235780,
+        "rev": "d3ff247475f50829a87bf248261ad5462cf07936",
+        "revCount": 236334,
         "type": "git",
         "url": "file:///home/cole/code/nixpkgs/cmpkgs"
       },
@@ -53,10 +50,7 @@
       },
       "locked": {
         "lastModified": 1595664747,
-        "narHash": "sha256-SC54aRFXG8ueWGS0THxRsDAUO7CBZJKSVjIren0TGys=",
-        "ref": "azure",
-        "rev": "310745e096b9be2c6f0bcfffd45af0e904f3c014",
-        "revCount": 94,
+        "narHash": "sha256-1b5g+SdgbB9lK6Io7QVMaC/2PsnJnQeYL7s+k2KtHm4=",
         "type": "git",
         "url": "file:///home/cole/code/sops-nix"
       },

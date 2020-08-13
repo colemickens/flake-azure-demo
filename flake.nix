@@ -1,8 +1,9 @@
 {
-  description = "azure-demo";
+  description = "nixos-azure-demos";
 
   inputs = {
     nixpkgs = { url = "github:nixos/nixpkgs/nixos-unstable"; };
+    #azure = { url = "github:colemickens/nixos-azure"; };
     azure = { url = "github:colemickens/flake-azure"; };
     sops-nix = { url = "github:Mic92/sops-nix/master"; };
     
