@@ -54,9 +54,6 @@ in
 
 
     sops = {
-      externalAuthEnvVars = {
-        AZURE_AUTH_MODE
-      };
       secrets = {
         "${hs}-key" = {
           format = "binary";
