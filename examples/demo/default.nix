@@ -12,15 +12,14 @@ in
 {
   imports = [
     "${modulesPath}/profiles/headless.nix"
-    "${inputs.azure}/modules"
-    "${inputs.sops-nix}/modules/sops"
+    inputs.sops-nix.nixosModules.sops
+    inputs.nixos-azure.nixosModules.azure-image
   ];
 
   config = {
     virtualisation.azure = {
       integration.enable = true;
       image = { diskSize = 2500; };
-      scripts.enable = true;
     };
 
     nix.nrBuildUsers = 64;
@@ -54,6 +53,7 @@ in
 
 
     sops = {
+      sshKeyPaths = [];
       secrets = {
         "${hs}-key" = {
           format = "binary";

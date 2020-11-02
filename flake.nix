@@ -3,11 +3,15 @@
 
   inputs = {
     nixpkgs = { url = "github:nixos/nixpkgs/nixos-unstable"; };
-    #azure = { url = "github:colemickens/nixos-azure"; };
-    azure = { url = "github:colemickens/flake-azure/dev"; };
-    sops-nix = { url = "github:Mic92/sops-nix/master"; };
-    azure.inputs.nixpkgs.follows = "nixpkgs";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-azure = {
+      url = "github:colemickens/flake-azure/dev";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-utils = { url = "github:numtide/flake-utils"; }; # TODO: adopt this
   };
 
   outputs = inputs:
@@ -47,17 +51,21 @@
               #azure-cli
               azure-storage-azcopy
               mkp224o
+
+              inputs.nixos-azure.packages.${system}.blobxfer
             ];
           }
       );
 
-      packages =
+      # TODO:
+      examples = (
         let
-          demo = (mkSystem "x86_64-linux" inputs.nixpkgs ./demo).config.system.build;
+          system = "x86_64-linux";
+          nixpkgs_ = (pkgsFor inputs.nixpkgs system true);
+          x = name: (mkSystem system inputs.nixpkgs name).config.system.build;
         in {
-          "x86_64-linux" = {
-            "demo" = demo;
-          };
-        };
+          demo = x ./examples/demo;
+        }
+      );
     };
 }

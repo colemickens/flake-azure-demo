@@ -1,5 +1,6 @@
 # nixos-azure-demo
-*a declarative NixOS-based Azure VM to securely and automatically boot a Tor hidden service*
+
+_a declarative NixOS-based Azure VM to securely and automatically boot a Tor hidden service_
 
 - [nixos-azure-demo](#nixos-azure-demo)
   - [Temporary Important WIP Info](#temporary-important-wip-info)
@@ -16,10 +17,11 @@
 ## Temporary Important WIP Info
 
 See `./build.sh`. I'm overriding:
-* `nixos-azure` (my fork, `dev` branch) (to hide it for now)
-* `sops-nix` (my fork, `azure` branch) (to use my fork of `sops` and relax nix constraints)
-* `sops` (inside `sops-nix`) (to get Azure MSI convenience fix)
-* `nixpkgs` (my fork, `cmpkgs` branch) (to get my Tor module bring-your-own-key improvement)
+
+- `nixos-azure` (my fork, `dev` branch) (to hide it for now)
+- `sops-nix` (my fork, `azure` branch) (to use my fork of `sops` and relax nix constraints)
+- `sops` (inside `sops-nix`) (to get Azure MSI convenience fix)
+- `nixpkgs` (my fork, `cmpkgs` branch) (to get my Tor module bring-your-own-key improvement)
 
 Note that if you want to look at the new Azure agent ([azure-linux-boot-agent](https://github.com/colemickens/azure-linux-boot-agent)), it's also hiding on a `dev` branch.
 
@@ -30,31 +32,32 @@ The `./demo/default.nix` includes some hacks that shouldn't be necessary.
 ## Overview
 
 This repo seeks to demonstrate a few things:
-* how to use an experimental new Nix feature, [flakes](#TODO), to compose Nix projects
-* a standalone repository building Azure VM images with the Nix modules from  [nixos-azure](https://github.com/colemickens/nixos-azure)
-* Linux booting in Azure using [azure-linux-boot-agent](https://github.com/colemickens/azure-linux-boot-agent) (*a simpler, safer way to boot Linux in Azure*)
-* securely shipping encrypted secrets that are transparently decrypted at boot-time thanks to [NixOS](https://nixos.org) + [`sops-nix`](https://github.com/Mic92/sops-nix) (see below, section [awesomeness](#awesomeness))
+
+- how to use an experimental new Nix feature, [flakes](#TODO), to compose Nix projects
+- a standalone repository building Azure VM images with the Nix modules from [nixos-azure](https://github.com/colemickens/nixos-azure)
+- Linux booting in Azure using [azure-linux-boot-agent](https://github.com/colemickens/azure-linux-boot-agent) (_a simpler, safer way to boot Linux in Azure_)
+- securely shipping encrypted secrets that are transparently decrypted at boot-time thanks to [NixOS](https://nixos.org) + [`sops-nix`](https://github.com/Mic92/sops-nix) (see below, section [awesomeness](#awesomeness))
 
 This demo will walk us through:
-* Provisioning an Azure KeyVault with a Key for encryption/decryption
-* Provisioning an Azure Identity which will be granted access to the KeyVault Key, and will be assigned to the Azure VMs as a Managed Identity (aka a "User Assigned Identity")
-* Encrypting secrets with `sops` (which will delegate to GPG + Azure KeyVault)
-* Creating a declarative NixOS image for Azure, with...
-  * built-in encrypted secrets that will be decrypted+mounted at boot using KeyVault + MSI using `sops-nix`
-  * [a new, lighter, safer Azure Linux agent (look ma, no Python!)](https://github.com/colemickens/azure-linux-boot-agent)
-* Booting the VM and watching as a Tor Hidden Service becomes available with **no user interaction** and **no unencrypted secrets in flight, anywhere, ever**.
 
+- Provisioning an Azure KeyVault with a Key for encryption/decryption
+- Provisioning an Azure Identity which will be granted access to the KeyVault Key, and will be assigned to the Azure VMs as a Managed Identity (aka a "User Assigned Identity")
+- Encrypting secrets with `sops` (which will delegate to GPG + Azure KeyVault)
+- Creating a declarative NixOS image for Azure, with...
+  - built-in encrypted secrets that will be decrypted+mounted at boot using KeyVault + MSI using `sops-nix`
+  - [a new, lighter, safer Azure Linux agent (look ma, no Python!)](https://github.com/colemickens/azure-linux-boot-agent)
+- Booting the VM and watching as a Tor Hidden Service becomes available with **no user interaction** and **no unencrypted secrets in flight, anywhere, ever**.
 
 ## Why this is cool!
-* Our secrets can be encrypted and  checked in, and yet still seamlessly accessed by applications!
-* Owing to `sops` we can have secrets that are easily consumed in integration pipelines (via an ssh keypair), in production systems (via Azure KeyVault+MSI), and developer workstations (via GPG, or Azure KeyVault+CLI)!
-* You get to write very small amounts of declarative Nix to produce images that can automatically start any service, with any secret, securely, using the best encryption actor for all of your environments.
-* If you don't know, Nix (and flakes) is very cool. If you have Nix and KVM (well, and technically my HS key), you can reproduce this exact demo image. Every single application, compiler flag, file, every single last dependency is hashed. Imagine if Ansible were perfect and actually reliable, or if Dockerfiles were *actually* reproducible and minimized *by default*. (see the `docker` dir in [`nixos-azure`](https://github.com/colemickens/nixos-azure/tree/main/docker) for an example)
 
+- Our secrets can be encrypted and checked in, and yet still seamlessly accessed by applications!
+- Owing to `sops` we can have secrets that are easily consumed in integration pipelines (via an ssh keypair), in production systems (via Azure KeyVault+MSI), and developer workstations (via GPG, or Azure KeyVault+CLI)!
+- You get to write very small amounts of declarative Nix to produce images that can automatically start any service, with any secret, securely, using the best encryption actor for all of your environments.
+- If you don't know, Nix (and flakes) is very cool. If you have Nix and KVM (well, and technically my HS key), you can reproduce this exact demo image. Every single application, compiler flag, file, every single last dependency is hashed. Imagine if Ansible were perfect and actually reliable, or if Dockerfiles were _actually_ reproducible and minimized _by default_. (see the `docker` dir in [`nixos-azure`](https://github.com/colemickens/nixos-azure/tree/main/docker) for an example)
 
 ## Walkthrough
 
-There is a video walkthrough of this demo. It largely covers the same information, but also reiterates it in audio+video form, which maybe useful to some: 
+There is a video walkthrough of this demo. It largely covers the same information, but also reiterates it in audio+video form, which maybe useful to some:
 
 [[embed here]]
 
@@ -112,9 +115,10 @@ oid="$(az identity show --name "${identity_name}" --resource-group "${kvrg}" -o 
 az keyvault set-policy --name "${kvname}" --object-id "${oid}" --key-permissions encrypt decrypt
 
 # Grant *ourselves* (via *our* OID) access to the Key
-myuser="$(az account show -o tsv --query [user.name])"
-myoid="$(az ad user show --id ${myuser} -o tsv --query [objectId])"
+myoid="$(az ad signed-in-user show -o tsv --query [objectId])"
 az keyvault set-policy --name "${kvname}" --object-id "${myoid}" --key-permissions encrypt decrypt
+
+bash
 
 # Print out Key's full resource id
 kid="$(az keyvault key show \
@@ -127,12 +131,11 @@ echo "${kid}"
 ```
 
 The final value printed out is a URL that is the Key ID. It uniquely identifies a specific version of a KeyVault Key. This is what we will instruct `sops` to use to encrypt our keys.
+
 ### 2. Generate our secret key
 
 Now let's generate our secret key to power our Tor Hidden Service.
 Again, all you need is `nix` installed.
-
-
 
 ```shell
 $ nix-shell -p mkp224o
@@ -150,15 +153,14 @@ Copy the files from the resulting directory into `./demo` (replace the existing 
 
 First create `.sops.yaml` to direct `sops` on how to encrypt new secrets.
 
-
 ```yaml
 # to encrypt new secrets with Azure KeyVault
 creation_rules:
   - path_regex: .*$
-    
+
     # be sure to update this with your AKV Key URL from above!
     azure_keyvault: https://use-your-key-url-here.vault.azure.net/keys/key-name/6e538f7c6d714d138226082070d1fe99
-    
+
     # to *also* encrypt new secrets with your GPG backup/offline key
 ... pgp: 'FBC7B9E2A4F9289AC0C1D4843D16CEE4A27381B4'
 ```
@@ -170,15 +172,16 @@ Then, simply invoke `sops` to encrypt the Hidden Service key.
 ```shell
 $ nix-shell -p sops
 
-# encrypt the file 
+# encrypt the file
 sops --encrypt "demo/hs_ed25519_secret_key" > "demo/hs_ed25519_secret_key.sops"
 ```
 
-(Note that our `.gitignore` contains "`hs_ed25519_secret_key`"  to prevent accidentally commiting any secret keys.)
+(Note that our `.gitignore` contains "`hs_ed25519_secret_key`" to prevent accidentally commiting any secret keys.)
 
 ### 4. Build the Image
 
 First, let's build the image (note, this requires KVM):
+
 ```shell
 nix --experimental-features 'nix-command flakes' \
   build ".#image.azureImage"
@@ -193,6 +196,7 @@ nix --experimental-features 'nix-command flakes' \
 ```
 
 Then you can upload the image:
+
 ```shell
 # this will be used to prefix the resource_group and name for the image
 AZPREFIX="something"
@@ -214,7 +218,7 @@ image_id="/subscriptions/aff271ee-e9be-4441-b9bb-42f5af4cbaeb/resourceGroups/208
 identity_id="/subscriptions/aff271ee-e9be-4441-b9bb-42f5af4cbaeb/resourceGroups/tor-deployment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/tor-vm-ident"
 sshpubkey="$(ssh-add -L)"
 
-# you can now copy-n-paste the rest to create a 
+# you can now copy-n-paste the rest to create a
 name="torvm-$RANDOM"
 az group create -n "${name}" -l "westus2"
 

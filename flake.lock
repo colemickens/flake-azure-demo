@@ -1,14 +1,45 @@
 {
   "nodes": {
-    "azure": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1597053966,
+        "narHash": "sha256-f9lbPS/GJ1His8fsDqM6gfa8kSqREU4eKiMCS5hrKg4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "ec20f52e2ff61e9c36c2b894b62fc1b4bd04c71b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1597053966,
+        "narHash": "sha256-f9lbPS/GJ1His8fsDqM6gfa8kSqREU4eKiMCS5hrKg4=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "ec20f52e2ff61e9c36c2b894b62fc1b4bd04c71b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixos-azure": {
       "inputs": {
+        "flake-utils": "flake-utils_2",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1595662642,
-        "narHash": "sha256-c1gcGwnk5+1WsbI9JxsWUro9igiuyRWQ+lZMPdfJza0=",
+        "lastModified": 1597360480,
+        "narHash": "sha256-7a7Zv8XZdlgi4nMg3lVeUICJmD0wr5xBXTsPp3nurIQ=",
         "type": "git",
         "url": "file:///home/cole/code/nixos-azure"
       },
@@ -21,11 +52,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1597359046,
-        "narHash": "sha256-Fnwc5BSNWLjATcrPvYSGoBJsJUawk1foxB2byEWJar4=",
+        "lastModified": 1597482472,
+        "narHash": "sha256-Cq4QYgWSpXr2OSTJDR+ZkZzqQBbHc3TyKWzmrYlE2TE=",
         "ref": "cmpkgs",
-        "rev": "ac8805de6204cc4b2eff0d3b4c98d850c44cec17",
-        "revCount": 237901,
+        "rev": "5c463ebff3ff7a2554aff704cc32d6edecc70636",
+        "revCount": 237899,
         "type": "git",
         "url": "file:///home/cole/code/nixpkgs/cmpkgs"
       },
@@ -38,7 +69,8 @@
     },
     "root": {
       "inputs": {
-        "azure": "azure",
+        "flake-utils": "flake-utils",
+        "nixos-azure": "nixos-azure",
         "nixpkgs": "nixpkgs",
         "sops-nix": "sops-nix"
       }
@@ -51,7 +83,7 @@
       },
       "locked": {
         "lastModified": 1597360027,
-        "narHash": "sha256-OE3l53TaWexCV7/KMAB0rYe76l8zNFO6ZlTEWGV3ibI=",
+        "narHash": "sha256-qlI7San2bqiP3n4yKgDC0MbSIz0MGjPKVxVR/zKr8Lg=",
         "type": "git",
         "url": "file:///home/cole/code/sops-nix"
       },
